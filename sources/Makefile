@@ -28,8 +28,8 @@
 #                is connected.
 # FUSES ........ Parameters for avrdude to flash the fuses appropriately.
 
-DEVICE     ?= atmega328p
-CLOCK      = 16000000
+DEVICE     ?= atmega2560
+CLOCK      = 16000000L
 PROGRAMMER ?= -c avrisp2 -P usb
 SOURCE    = main.c motion_control.c gcode.c spindle_control.c coolant_control.c serial.c \
              protocol.c stepper.c eeprom.c settings.c planner.c nuts_bolts.c limits.c \
@@ -42,7 +42,8 @@ FUSES      = -U hfuse:w:0xd2:m -U lfuse:w:0xff:m
 # Tune the lines below only if you know what you are doing:
 
 AVRDUDE = avrdude $(PROGRAMMER) -p $(DEVICE) -B 10 -F
-COMPILE = avr-gcc -Wall -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE) -I. -ffunction-sections -fdata-sections
+COMPILE = avr-gcc -Wall -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE) -I. -ffunction-sections -flto
+
 
 OBJECTS = $(addprefix $(BUILDDIR)/,$(notdir $(SOURCE:.c=.o)))
 
