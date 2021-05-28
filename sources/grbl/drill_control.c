@@ -22,50 +22,34 @@
 #include "grbl.h"
 
 
-void coolant_init() {
+void drill_init() {
     // Configura los pines como salida
-    COOLANT_FLOOD_DDR |= (1 << COOLANT_FLOOD_BIT);
-    COOLANT_MIST_DDR |= (1 << COOLANT_MIST_BIT);
-    coolant_stop();
+    DRILL_FLOOD_DDR |= (1 << DRILL_FLOOD_BIT);
+    DRILL_MIST_DDR |= (1 << DRILL_MIST_BIT);
+    stop_drill();
 }
 
 
 // Devuelve el estado actual de la salida de enfriamiento.
 // Las anulaciones pueden alterar el estado programado.
-uint8_t coolant_get_state() {
-    uint8_t cl_state = COOLANT_STATE_DISABLE;
-#ifdef INVERT_COOLANT_FLOOD_PIN
-    if (bit_isfalse(COOLANT_FLOOD_PORT,(1 << COOLANT_FLOOD_BIT))) {
-#else
-    if (bit_istrue(COOLANT_FLOOD_PORT, (1 << COOLANT_FLOOD_BIT))) {
-#endif
-        cl_state |= COOLANT_STATE_FLOOD;
+uint8_t get_drill_state() {
+    uint8_t cl_state = DRILL_STATE_DISABLE;
+    if (bit_istrue(DRILL_FLOOD_PORT, (1 << DRILL_FLOOD_BIT))) {
+        cl_state |= DRILL_STATE_FLOOD;
     }
-#ifdef INVERT_COOLANT_MIST_PIN
-    if (bit_isfalse(COOLANT_MIST_PORT,(1 << COOLANT_MIST_BIT))) {
-#else
-    if (bit_istrue(COOLANT_MIST_PORT, (1 << COOLANT_MIST_BIT))) {
-#endif
-        cl_state |= COOLANT_STATE_MIST;
+    if (bit_istrue(DRILL_MIST_PORT, (1 << DRILL_MIST_BIT))) {
+        cl_state |= DRILL_STATE_MIST;
     }
     return (cl_state);
 }
 
 
-// Llamado directamente por coolant_init() y mc_reset(),
+// Llamado directamente por drill_init() y mc_reset(),
 // que puede ser a nivel de interrupción.
 // No se establece la bandera de informe, pero sólo es llamado por las rutinas que no lo necesitan.
-void coolant_stop() {
-#ifdef INVERT_COOLANT_FLOOD_PIN
-    COOLANT_FLOOD_PORT |= (1 << COOLANT_FLOOD_BIT);
-#else
-    COOLANT_FLOOD_PORT &= ~(1 << COOLANT_FLOOD_BIT);
-#endif
-#ifdef INVERT_COOLANT_MIST_PIN
-    COOLANT_MIST_PORT |= (1 << COOLANT_MIST_BIT);
-#else
-    COOLANT_MIST_PORT &= ~(1 << COOLANT_MIST_BIT);
-#endif
+void stop_drill() {
+    DRILL_FLOOD_PORT &= ~(1 << DRILL_FLOOD_BIT);
+    DRILL_MIST_PORT &= ~(1 << DRILL_MIST_BIT);
 }
 
 
@@ -73,36 +57,20 @@ void coolant_stop() {
 // Establece inmediatamente el estado de funcionamiento de enfriamiento de FLOOD y también de enfriamiento de MIST,
 // si está habilitado. También establece una bandera para reportar una actualización del estado de enfriamiento.
 // Llamado por el cambio de refrigerante, restauración de estacionamiento, retracción de estacionamiento, modo de sueño,
-// fin de programa del g-code, y g-code parser coolant_sync().
-void coolant_set_state(uint8_t mode) {
+// fin de programa del g-code, y g-code parser sync_drill().
+void set_drill_state(uint8_t mode) {
     if (sys.abort) { return; } // Block during abort.
 
-    if (mode & COOLANT_FLOOD_ENABLE) {
-#ifdef INVERT_COOLANT_FLOOD_PIN
-        COOLANT_FLOOD_PORT &= ~(1 << COOLANT_FLOOD_BIT);
-#else
-        COOLANT_FLOOD_PORT |= (1 << COOLANT_FLOOD_BIT);
-#endif
+    if (mode & DRILL_FLOOD_ENABLE) {
+        DRILL_FLOOD_PORT |= (1 << DRILL_FLOOD_BIT);
     } else {
-#ifdef INVERT_COOLANT_FLOOD_PIN
-        COOLANT_FLOOD_PORT |= (1 << COOLANT_FLOOD_BIT);
-#else
-        COOLANT_FLOOD_PORT &= ~(1 << COOLANT_FLOOD_BIT);
-#endif
+        DRILL_FLOOD_PORT &= ~(1 << DRILL_FLOOD_BIT);
     }
 
-    if (mode & COOLANT_MIST_ENABLE) {
-#ifdef INVERT_COOLANT_MIST_PIN
-        COOLANT_MIST_PORT &= ~(1 << COOLANT_MIST_BIT);
-#else
-        COOLANT_MIST_PORT |= (1 << COOLANT_MIST_BIT);
-#endif
+    if (mode & DRILL_MIST_ENABLE) {
+        DRILL_MIST_PORT |= (1 << DRILL_MIST_BIT);
     } else {
-#ifdef INVERT_COOLANT_MIST_PIN
-        COOLANT_MIST_PORT |= (1 << COOLANT_MIST_BIT);
-#else
-        COOLANT_MIST_PORT &= ~(1 << COOLANT_MIST_BIT);
-#endif
+        DRILL_MIST_PORT &= ~(1 << DRILL_MIST_BIT);
     }
 
     sys.report_ovr_counter = 0; // Set to report change immediately
@@ -112,8 +80,8 @@ void coolant_set_state(uint8_t mode) {
 // Punto de entrada del analizador de código G para establecer el estado de enfriamiento.
 // Fuerza una sincronización del buffer del planificador
 // y se retira si un modo de abortar o comprobar está activo.
-void coolant_sync(uint8_t mode) {
+void sync_drill(uint8_t mode) {
     if (sys.state == STATE_CHECK_MODE) { return; }
     protocol_buffer_synchronize(); // Ensure coolant turns on when specified in program.
-    coolant_set_state(mode);
+    set_drill_state(mode);
 }

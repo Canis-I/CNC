@@ -19,29 +19,29 @@
   along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef coolant_control_h
-#define coolant_control_h
+#ifndef drill_control_h
+#define drill_control_h
 
-#define COOLANT_STATE_DISABLE   0  // Must be zero
-#define COOLANT_STATE_FLOOD     PL_COND_FLAG_COOLANT_FLOOD
-#define COOLANT_STATE_MIST      PL_COND_FLAG_COOLANT_MIST
+#define DRILL_STATE_DISABLE   0  // Debe ser cero.
+#define DRILL_STATE_FLOOD     PL_COND_FLAG_DRILL_FLOOD
+#define DRILL_STATE_MIST      PL_COND_FLAG_DRILL_MIST
 
 
-// Inicia los pines de enfriamiento.
-void coolant_init();
+// Inicia los pines del taladro
+void drill_init();
 
-// Devuelve el estado actual de la salida de enfriamiento.
+// Devuelve el estado actual de la salida del taladro.
 // Las anulaciones pueden alterar el estado programado.
-uint8_t coolant_get_state();
+uint8_t get_drill_state();
 
-// Deshabilita los pines de enfriamiento de forma inmediata.
-void coolant_stop();
+// Deshabilita los pines del taladro de forma inmediata.
+void stop_drill();
 
-// Establece los pines de enfriamiento de acuerdo al estado especificado.
-void coolant_set_state(uint8_t mode);
+// Establece los pines del taladro de acuerdo al estado especificado.
+void set_drill_state(uint8_t mode);
 
-// Entidad principal de G-Code para establecer los estados de enfriamiento.
+// Entidad principal de G-Code para establecer los estados del taladro.
 // Verifica y ejecuta condiciones adicionales
-void coolant_sync(uint8_t mode);
+void sync_drill(uint8_t mode);
 
 #endif
