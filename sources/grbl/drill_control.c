@@ -1,5 +1,5 @@
 /*
-  coolant_control.c - coolant control methods
+  drill_control.c - drill control methods
   Part of Grbl
 
   Copyright (c) 2012-2016 Sungeun K. Jeon
