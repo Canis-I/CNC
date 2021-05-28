@@ -2,6 +2,7 @@
 #
 #  Copyright (c) 2009-2011 Simen Svale Skogsrud
 #  Copyright (c) 2012-2015 Sungeun K. Jeon
+#  Copyright (c) 2021 Canis I
 #
 #  Grbl is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -30,10 +31,10 @@
 
 DEVICE     ?= atmega2560
 CLOCK      = 16000000L
-PROGRAMMER ?= -c avrisp2 -P usb
-SOURCE    = main.c motion_control.c gcode.c spindle_control.c coolant_control.c serial.c \
+PROGRAMMER ?= -D -c avrisp2 -P usb
+SOURCE    = main.c motion_control.c gcode.c spindle_control.c drill_control.c serial.c \
              protocol.c stepper.c eeprom.c settings.c planner.c nuts_bolts.c limits.c \
-             print.c probe.c report.c system.c
+             print.c probe.c report.c system.c sleep.c jog.c
 BUILDDIR = build
 SOURCEDIR = grbl
 # FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0x24:m
