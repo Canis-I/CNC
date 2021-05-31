@@ -1,0 +1,95 @@
+REGISTROS DDRX, PORTX Y PINX
+
+Cada puerto consta de tres registros:
+DDRx - Registro de dirección de datos
+PORTx - Registro de salida de clavijas
+PINx - Registro de entrada de pin
+Donde x = Seria el nombre del puerto (A, B, C o D)
+
+DDRx (registro de dirección de datos) configura la dirección de datos de los pines del puerto. Significa que su configuración 
+determina si los pines del puerto 
+se usarán para entrada o salida. Escribir 0 en un bit en DDRx hace que el pin del puerto correspondiente sea la entrada, 
+mientras que escribir 1 en un bit en DDRx hace que el pin del puerto correspondiente sea la salida.
+
+PINx (Port IN) utilizado para leer datos de los pines del puerto. Para leer los datos del pin del puerto, primero debe cambiar la dirección de los datos del 
+puerto a la entrada. Esto se hace estableciendo bits en DDRx a cero. Si el puerto se convierte en salida, la lectura del registro PINx le dará datos que se 
+han emitido en los pies del puerto.
+
+PORTx se utiliza para dos propósitos: para enviar datos: cuando el puerto está configurado como salida: Cuando establece bits en DDRx en 1, 
+los pines correspondientes se convierten en pines de salida. Para activar / desactivar las resistencias pull up - cuando el puerto se configura como entrada
+Cuando establece bits en DDRx en 0, es decir, hace que los pines del puerto sean entradas, los bits correspondientes en el registro PORTx se utilizan
+para activar / desactivar los registros pull-up asociados con ese pin. 
+
+Para poder manejar registros disponemos de unas funciones especiales para registros es decir operadores Bit a Bit:
+
+&= :  El operador AND bit a bit compuesto & = se usa a menudo con una variable y una constante para forzar bits particulares en una variable al estado BAJO (a 0).
+myByte = 0b10101010;
+myByte &= 0b11111100;  // como resultado 0b10101000
+
+|=: El operador OR bit a bit compuesto | = se usa a menudo con una variable y una constante para "establecer" (establecer en 1) bits particulares en una variable.
+myByte = 0b10101010;
+myByte |= 0b00000011 == 0b10101011
+
+~ : El operador NOT bit a bit se aplica a un solo operando a su derecha. Bitwise NOT cambia cada bit a su opuesto: 0 se convierte en 1 y 1 se convierte en 0.
+int b = ~a; // binary:  1111111110011000 = -104
+
+<<:  El operador de desplazamiento a la izquierda << hace que los bits del operando de la izquierda se desplacen a la izquierda el número de posiciones
+especificado por el operando de la derecha.
+int x = 5; // binario: 0000000000000101
+int y = 14;
+int resultado = x << y; // binario: 0100000000000000 - se descartó el primer 1 de 101
+
+>>: El operador de desplazamiento a la derecha >> hace que los bits del operando de la izquierda se desplacen a la derecha el número de 
+posiciones especificado por el operando de la derecha.
+
+int x = -16; // binario: 1111111111110000
+int y = 3;
+int resultado = x >> y; // binario: 1111111111111110
+
+EJEMPLOS:
+
+#1:
+
+#define	F_CPU	8000000UL
+#include 
+#include 
+uint8_t efecto = 0;
+int main(void){
+	//Configura el PORTD como salida digital.
+	PORTD = 0x00;
+	DDRD = 0xFF;
+	DDRA &= ~(1<
+  
+Se utiliza para realizar un secuencial de luces, pero además se agregan 2 botones para poder efectuar varios efectos.
+Los botones estarán conectados en los pines PA0 y PA1, además, 
+Se habilitará la resistencia pull-up interna para estos pines.
+  
+ #2:
+ 
+ #define F_CPU	8000000UL
+#include 
+#include 
+int main(void){
+	//Configuramos el PORTD como salida digital
+	PORTD = 0x00;
+	DDRD = 0xFF;
+	while (1){
+		for(int i = 0; i<8; i++){
+			PORTD = (3<
+      
+  Se configura el puerto D como salida digital para conectar leds y poder efectuar un secuencial de luces. 
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
